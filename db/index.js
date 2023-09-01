@@ -13,32 +13,32 @@ class DB {
 
 findAllPossibleManagers(employeeId) {
     return this.connection.promise().query(
-      'SELECT id, first_name, last_name FROM employee WHERE id != ?',
+      'SELECT id, first_name, last_name FROM Team Member WHERE id != ?',
       employeeId
     );
   }
 
   createEmployee(employee) {
-    return this.connection.promise().query('INSERT INTO employee SET ?', employee);
+    return this.connection.promise().query('INSERT INTO Team Member SET ?', employee);
   }
 
   removeEmployee(employeeId) {
     return this.connection.promise().query(
-      'DELETE FROM employee WHERE id = ?',
+      'DELETE FROM Team Member WHERE id = ?',
       employeeId
     );
   }
 
   updateEmployeeRole(employeeId, roleId) {
     return this.connection.promise().query(
-      'UPDATE employee SET role_id = ? WHERE id = ?',
+      'UPDATE Team Member SET role_id = ? WHERE id = ?',
       [roleId, employeeId]
     );
   }
 
   updateEmployeeManager(employeeId, managerId) {
     return this.connection.promise().query(
-      'UPDATE employee SET manager_id = ? WHERE id = ?',
+      'UPDATE Team Member SET manager_id = ? WHERE id = ?',
       [managerId, employeeId]
     );
   }
