@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/greentree31/T-tracker#readme",
   "dependencies": {
+    "asciiart-logo": "^0.2.7",
     "inquirer": "^8.2.4",
     "mysql2": "^3.6.0"
   }

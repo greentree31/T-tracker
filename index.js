@@ -3,11 +3,28 @@ const logo = require('asciiart-logo');
 const db = require('./db');
 require('console.table');
 
+
 init();
 
 function init() {
   const logoText = logo({ name: 'Team Member Tracker' }).render();
-  console.log(logoText);
+  console.log(
+    logo({
+        name: 'Team Member Tracker',
+        font: 'DOS Rebel',
+        lineChars: 11,
+        padding: 2,
+        margin: 3,
+        borderColor: 'blue',
+        logoColor: 'red',
+        textColor: 'red',
+    })
+    .emptyLine()
+    .right('version 3.7.123')
+    .emptyLine()
+    .center(longText)
+    .render()
+)
   loadMainPrompts();
 }
 
@@ -270,7 +287,7 @@ function updateEmployeeRole() {
                 }
               ])
                 .then(res => db.updateEmployeeRole(employeeId, res.roleId))
-                .then(() => console.log('Updated team member's role'))
+                .then(() => console.log('Updated team members role'))
                 .then(() => loadMainPrompts())
             });
         });
