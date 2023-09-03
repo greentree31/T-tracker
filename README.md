@@ -3,7 +3,7 @@
 
 ## Final Product
 
-[![Final Product](assets\img_team_tracker.png)](assets\img_team_tracker.png)
+[![Final Product](assets/img_team_tracker.png)](assets/img_team_tracker.png)
 
 
 ## GitHub Repository
