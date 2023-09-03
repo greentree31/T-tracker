@@ -10,6 +10,9 @@
 
 [https://github.com/greentree31/T-tracker](https://github.com/greentree31/T-tracker "Git Hub Repository")
 
+## Walk-Through Video
+
+[https://drive.google.com/file/d/1QogtkjCwrGR5tBVNhoqQqK-7ZUBskQMB/view](https://drive.google.com/file/d/1QogtkjCwrGR5tBVNhoqQqK-7ZUBskQMB/view))
 
 ## Technology
 
