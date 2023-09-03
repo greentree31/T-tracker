@@ -309,7 +309,7 @@ function viewUtilizedBudgetByDepartment() {
       console.table(departments);
     })
     .then(() => loadMainPrompts());
-}
+};
 
 // EXIT
 function quit() {
