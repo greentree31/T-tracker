@@ -1,4 +1,4 @@
-use teams;
+use teams_db;
 
 INSERT INTO department (name)
 VALUES  ('Graphics'),
@@ -15,7 +15,7 @@ VALUES  ('Graphic Designer', 80000, 1),
         ('Operations Manager', 160000, 4);
     
 
-INSERT INTO employee (first_name, last_name, role_id, manager_id)
+INSERT INTO member (first_name, last_name, role_id, manager_id)
 VALUES  ('Mina', 'Evans', 1, NULL),
         ('Lauren', 'Grant', 2, NULL),
         ('Chris', 'Farley', 3, NULL),

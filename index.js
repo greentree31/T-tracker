@@ -2,6 +2,7 @@ const { prompt } = require("inquirer");
 const logo = require("asciiart-logo");
 const db = require("./db");
 require("console.table");
+require('dotenv').config();
 
 init();
 
@@ -21,16 +22,12 @@ function loadMainPrompts() {
       message: "What do you want to do?",
       choices: [
         {
-          name: "View All Team Members",
-          value: "VIEW_EMPLOYEES",
+          name: "View All members",
+          value: "VIEW_MEMBERS",
         },
         {
-          name: "Add Team Member",
-          value: "ADD_EMPLOYEE",
-        },
-        {
-          name: "Update Team Member Role",
-          value: "UPDATE_EMPLOYEE_ROLE",
+          name: "Update member Role",
+          value: "UPDATE_MEMBER_ROLE",
         },
         {
           name: "View All Roles",
@@ -49,26 +46,23 @@ function loadMainPrompts() {
           value: "ADD_DEPARTMENT",
         },
         {
-          name: "View Budget",
-          value: "VIEW_BUDGET_",
+          name: "Add member",
+          value: "ADD_MEMBER",
         },
         {
-          name: "Quit",
-          value: "QUIT",
+          name: "View Budget",
+          value: "VIEW_BUDGET_",
         },
       ],
     },
   ]).then((res) => {
     let choice = res.choice;
     switch (choice) {
-      case "VIEW_EMPLOYEES":
-        viewEmployees();
+      case "VIEW_MEMBERS":
+        viewMembers();
         break;
-      case "ADD_EMPLOYEE":
-        addEmployee();
-        break;
-      case "UPDATE_EMPLOYEE_ROLE":
-        updateEmployeeRole();
+      case "UPDATE_MEMBER_ROLE":
+        updateMemberRole();
         break;
       case "VIEW_DEPARTMENTS":
         viewDepartments();
@@ -76,14 +70,18 @@ function loadMainPrompts() {
       case "ADD_DEPARTMENT":
         addDepartment();
         break;
-      case "BUDGET":
-        viewBudget();
-        break;
+
       case "VIEW_ROLES":
         viewRoles();
         break;
       case "ADD_ROLE":
         addRole();
+        break;
+      case "ADD_MEMBER":
+        addMember();
+        break;
+      case "VIEW_UTILIZED_BUDGET_BY_DEPARTMENT":
+        viewUtilizedBudgetByDepartment();
         break;
       default:
         quit();
@@ -91,19 +89,19 @@ function loadMainPrompts() {
   });
 }
 
-// TEAM MEMBERS
+// members
 
-function viewEmployees() {
-  db.findAllEmployees()
+function viewMembers() {
+  db.findAllMembers()
     .then(([rows]) => {
-      let employees = rows;
+      let members = rows;
       console.log("\n");
-      console.table(employees);
+      console.table(members);
     })
     .then(() => loadMainPrompts());
 }
 
-function viewEmployeesByDepartment() {
+function viewMembersByDepartment() {
   db.findAllDepartments().then(([rows]) => {
     let departments = rows;
     const departmentChoices = departments.map(({ id, name }) => ({
@@ -115,111 +113,58 @@ function viewEmployeesByDepartment() {
       {
         type: "list",
         name: "departmentId",
-        message: "Which department would you like to see team members for?",
+        message: "Which department would you like to see members for?",
         choices: departmentChoices,
       },
     ])
-      .then((res) => db.findAllEmployeesByDepartment(res.departmentId))
+      .then((res) => db.findAllMembersByDepartment(res.departmentId))
       .then(([rows]) => {
-        let employees = rows;
+        let members = rows;
         console.log("\n");
-        console.table(employees);
+        console.table(members);
       })
       .then(() => loadMainPrompts());
   });
 }
 
-function addEmployee() {
-  prompt([
-    {
-      name: "first_name",
-      message: "What is the team members first name?",
-    },
-    {
-      name: "last_name",
-      message: "What is the team members last name?",
-    },
-  ]).then((res) => {
-    let firstName = res.first_name;
-    let lastName = res.last_name;
+function updateMemberRole() {
+  db.findAllMembers().then(([rows]) => {
+    let members = rows;
+    const memberChoices = members.map(({ id, first_name, last_name }) => ({
+      name: `${first_name} ${last_name}`,
+      value: id,
+    }));
 
-    db.findAllRoles().then(([rows]) => {
-      let roles = rows;
-      const roleChoices = roles.map(({ id, title }) => ({
-        name: title,
-        value: id,
-      }));
-
-      prompt({
+    prompt([
+      {
         type: "list",
-        name: "roleId",
-        message: "What is the team members role?",
-        choices: roleChoices,
-      }).then((res) => {
-        let roleId = res.roleId;
+        name: "memberId",
+        message: "Which members role do you want to update?",
+        choices: memberChoices,
+      },
+    ]).then((res) => {
+      let memberId = res.memberId;
+      db.findAllRoles().then(([rows]) => {
+        let roles = rows;
+        const roleChoices = roles.map(({ id, title }) => ({
+          name: title,
+          value: id,
+        }));
 
-        db.findAllEmployees()
-          .then(([rows]) => {
-            let teamMembers = rows;
-            const findTeamMembers = teamMembers.map(
-              ({ id, first_name, last_name }) => ({
-                name: `${first_name} ${last_name}`,
-                value: id,
-              })
-            );
-
-            db.createEmployee(employee);
-          })
-          .then(() =>
-            console.log(`Added ${firstName} ${lastName} to the database`)
-          )
+        prompt([
+          {
+            type: "list",
+            name: "roleId",
+            message: "Which role do you want to assign the selected member?",
+            choices: roleChoices,
+          },
+        ])
+          .then((res) => db.updateMemberRole(memberId, res.roleId))
+          .then(() => console.log("Updated member's role"))
           .then(() => loadMainPrompts());
       });
     });
   });
-}
-
-function updateEmployeeRole() {
-  db.findAllEmployees()
-    .then(([rows]) => {
-      let employees = rows;
-      const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
-        name: `${first_name} ${last_name}`,
-        value: id
-      }));
-
-      prompt([
-        {
-          type: "list",
-          name: "employeeId",
-          message: "Which Team Members role do you want to update?",
-          choices: employeeChoices
-        }
-      ])
-        .then(res => {
-          let employeeId = res.employeeId;
-          db.findAllRoles()
-            .then(([rows]) => {
-              let roles = rows;
-              const roleChoices = roles.map(({ id, title }) => ({
-                name: title,
-                value: id
-              }));
-
-              prompt([
-                {
-                  type: "list",
-                  name: "roleId",
-                  message: "Which role do you want to assign the selected employee?",
-                  choices: roleChoices
-                }
-              ])
-                .then(res => db.updateEmployeeRole(employeeId, res.roleId))
-                .then(() => console.log("Updated employee's role"))
-                .then(() => loadMainPrompts())
-            });
-        });
-    })
 }
 
 // ROLES
@@ -289,10 +234,75 @@ function addDepartment() {
       .then(() => loadMainPrompts());
   });
 }
+function addMember() {
+  prompt([
+    {
+      name: "first_name",
+      message: "What is the member's first name?",
+    },
+    {
+      name: "last_name",
+      message: "What is the member's last name?",
+    },
+  ]).then((res) => {
+    let firstName = res.first_name;
+    let lastName = res.last_name;
+
+    db.findAllRoles().then(([rows]) => {
+      let roles = rows;
+      const roleChoices = roles.map(({ id, title }) => ({
+        name: title,
+        value: id,
+      }));
+
+      prompt({
+        type: "list",
+        name: "roleId",
+        message: "What is the member's role?",
+        choices: roleChoices,
+      }).then((res) => {
+        let roleId = res.roleId;
+
+        db.findAllMembers().then(([rows]) => {
+          let members = rows;
+          const managerChoices = members.map(
+            ({ id, first_name, last_name }) => ({
+              name: `${first_name} ${last_name}`,
+              value: id,
+            })
+          );
+
+          managerChoices.unshift({ name: "None", value: null });
+
+          prompt({
+            type: "list",
+            name: "managerId",
+            message: "Who is the member's manager?",
+            choices: managerChoices,
+          })
+            .then((res) => {
+              let member = {
+                manager_id: res.managerId,
+                role_id: roleId,
+                first_name: firstName,
+                last_name: lastName,
+              };
+
+              db.createMember(member);
+            })
+            .then(() =>
+              console.log(`Added ${firstName} ${lastName} to the database`)
+            )
+            .then(() => loadMainPrompts());
+        });
+      });
+    });
+  });
+}
 
 // BUDGET
-function viewBudget() {
-  db.viewBudgets()
+function viewUtilizedBudgetByDepartment() {
+  db.viewDepartmentBudgets()
     .then(([rows]) => {
       let departments = rows;
       console.log("\n");
